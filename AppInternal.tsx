@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   NavigationContainer,
   DefaultTheme,
@@ -16,11 +16,13 @@ import { useTheme } from "./src/utils/createStyles";
 import Settings from "./src/stacks/Settings";
 import { useScheme } from "./src/theme/ThemeProvider";
 import {
-  useFonts,
   Poppins_400Regular,
   Poppins_700Bold,
   Poppins_500Medium,
 } from "@expo-google-fonts/poppins";
+import * as Font from "expo-font";
+import { useAuth } from "./src/providers/AuthProvider";
+import * as SplashScreen from "expo-splash-screen";
 const Light = {
   ...DefaultTheme,
   colors: {
@@ -35,19 +37,48 @@ const Dark = {
     background: themes.dark.primary,
   },
 };
-
 const Stack = createStackNavigator();
+
 function AppInternal() {
   const [scheme] = useScheme();
   const theme = useTheme();
-  let [fontsLoaded] = useFonts({
-    "poppins-regular": Poppins_400Regular,
-    "poppins-bold": Poppins_700Bold,
-    "poppins-medium": Poppins_500Medium,
-  });
-  if (!fontsLoaded) return null;
+  const auth = useAuth();
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Pre-load fonts, make any API calls you need to do here
+        await Font.loadAsync({
+          "poppins-regular": Poppins_400Regular,
+          "poppins-bold": Poppins_700Bold,
+          "poppins-medium": Poppins_500Medium,
+        });
+        await auth.initAuth();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // Tell the application to render
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) await SplashScreen.hideAsync();
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
+
   return (
-    <NavigationContainer theme={scheme === "dark" ? Dark : Light}>
+    <NavigationContainer
+      theme={scheme === "dark" ? Dark : Light}
+      onReady={onLayoutRootView}
+    >
       <IconContext.Provider
         value={{
           color: theme.text,
@@ -60,11 +91,18 @@ function AppInternal() {
           barStyle={scheme === "dark" ? "light-content" : "dark-content"}
         />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen component={Home} name="Home" />
-          <Stack.Screen component={Login} name="Login" />
-          <Stack.Screen component={Signup} name="Signup" />
-          <Stack.Screen component={Chat} name="Chat" />
-          <Stack.Screen component={Settings} name="Settings" />
+          {auth.user ? (
+            <>
+              <Stack.Screen component={Home} name="Home" />
+              <Stack.Screen component={Chat} name="Chat" />
+              <Stack.Screen component={Settings} name="Settings" />
+            </>
+          ) : (
+            <>
+              <Stack.Screen component={Login} name="Login" />
+              <Stack.Screen component={Signup} name="Signup" />
+            </>
+          )}
         </Stack.Navigator>
       </IconContext.Provider>
     </NavigationContainer>
