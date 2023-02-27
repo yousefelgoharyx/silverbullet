@@ -1,11 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { createContext, PropsWithChildren, useContext, useState } from "react";
 import { httpAgent } from "../utils/axios";
 
 // create auth provider with react context
@@ -31,29 +25,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (user: UserForm) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const { data } = await httpAgent.post<Omit<User, "username">>(
-          "/auth/login",
-          user
-        );
-        await AsyncStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...data,
-            username: user.username,
-          })
-        );
-        setUser({
-          ...data,
-          username: user.username,
-        });
-
-        resolve(true);
-      } catch (error) {
-        reject(error);
-      }
-    });
+    const { data } = await httpAgent.post<Omit<User, "username">>("/auth/login", user);
+    const newUser = {
+      ...data,
+      username: user.username,
+    };
+    await AsyncStorage.setItem("user", JSON.stringify(newUser));
+    setUser(newUser);
   };
 
   const logout = async () => {

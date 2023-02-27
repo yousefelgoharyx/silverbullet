@@ -1,17 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {
-  createContext,
-  useContext,
-  useState,
-  PropsWithChildren,
-  useLayoutEffect,
-} from 'react';
-import {useColorScheme} from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState, PropsWithChildren } from "react";
+import { useColorScheme } from "react-native";
 
-type ColorScheme = 'dark' | 'light';
+type ColorScheme = "dark" | "light" | "default";
 // create theme context with default theme
 
-type SchemeContextType = [ColorScheme, (scheme: ColorScheme) => void];
+type SchemeContextType = {
+  scheme: ColorScheme;
+  setScheme: (scheme: ColorScheme) => void;
+  initScheme: () => void;
+};
 
 // @ts-ignore
 const SchemeContext = createContext<SchemeContextType>();
@@ -20,29 +18,26 @@ const SchemeContext = createContext<SchemeContextType>();
 export const useScheme = () => useContext(SchemeContext);
 
 // create Scheme provider
-export const SchemeProvider = ({children}: PropsWithChildren) => {
+export const SchemeProvider = ({ children }: PropsWithChildren) => {
   const preferred = useColorScheme();
-  const [scheme, setScheme] = useState<ColorScheme>(preferred ?? 'light');
+  const [scheme, setSchemeState] = useState<ColorScheme>(preferred ?? "light");
 
-  async function setColorScheme(newScheme: ColorScheme) {
-    await AsyncStorage.setItem('scheme', newScheme);
-    setScheme(newScheme);
+  async function setScheme(newScheme: ColorScheme) {
+    await AsyncStorage.setItem("scheme", newScheme);
+    setSchemeState(newScheme);
   }
 
-  useLayoutEffect(() => {
-    async function getColorScheme(): Promise<ColorScheme | null> {
-      return (await AsyncStorage.getItem('scheme')) as ColorScheme | null;
-    }
+  async function getCurrentScheme(): Promise<ColorScheme | null> {
+    return (await AsyncStorage.getItem("scheme")) as ColorScheme | null;
+  }
 
-    (async () => {
-      const storageScheme = await getColorScheme();
-      console.log(storageScheme);
+  async function initScheme() {
+    const currentScheme = await getCurrentScheme();
+    setScheme(currentScheme ?? "light");
+  }
 
-      setColorScheme(storageScheme ?? 'light');
-    })();
-  }, []);
   return (
-    <SchemeContext.Provider value={[scheme, setColorScheme]}>
+    <SchemeContext.Provider value={{ scheme, setScheme, initScheme }}>
       {children}
     </SchemeContext.Provider>
   );

@@ -17,13 +17,13 @@ import Switch from "../ui/Switch";
 import { useTheme } from "../utils/createStyles";
 import { useScheme } from "../theme/ThemeProvider";
 import { useAuth } from "../providers/AuthProvider";
-import { useNavigation } from "@react-navigation/native";
 
 const Settings = () => {
-  const [scheme, setScheme] = useScheme();
-  const navigation = useNavigation();
-  const handleChangeTheme = (newState: boolean) => {
-    setScheme(newState ? "dark" : "light");
+  console.log("Settings component is running");
+
+  const { scheme, setScheme } = useScheme();
+  const handleEnableDarkMode = (enable: boolean) => {
+    setScheme(enable ? "dark" : "light");
   };
   const theme = useTheme();
   const { user, logout } = useAuth();
@@ -65,7 +65,7 @@ const Settings = () => {
         left={
           <Switch
             open={scheme === "dark" ? true : false}
-            onChange={handleChangeTheme}
+            onChange={handleEnableDarkMode}
           />
         }
         title="Dark Mode"

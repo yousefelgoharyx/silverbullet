@@ -1,19 +1,33 @@
-import React from "react";
-import AppInternal from "./AppInternal";
-import { AuthProvider } from "./src/providers/AuthProvider";
-import { SchemeProvider } from "./src/theme/ThemeProvider";
+import { View } from "react-native";
+import { useCallback } from "react";
+import EntryApp from "./EntryApp";
 import * as SplashScreen from "expo-splash-screen";
+import { AppProvider } from "./src/providers/AppProviders";
+import useInitApp from "./src/hooks/useInitApp";
 
 SplashScreen.preventAutoHideAsync();
 
-const App2 = () => {
+const App = () => {
   return (
-    <SchemeProvider>
-      <AuthProvider>
-        <AppInternal />
-      </AuthProvider>
-    </SchemeProvider>
+    <AppProvider>
+      <AppNavigator />
+    </AppProvider>
   );
 };
 
-export default App2;
+const AppNavigator = () => {
+  const isAppReady = useInitApp();
+
+  const onLayoutRootView = useCallback(async () => {
+    if (isAppReady) await SplashScreen.hideAsync();
+  }, [isAppReady]);
+
+  if (!isAppReady) return null;
+  return (
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <EntryApp />
+    </View>
+  );
+};
+
+export default App;
