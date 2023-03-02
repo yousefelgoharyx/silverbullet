@@ -5,10 +5,7 @@ import Container from "./Container";
 import Text from "./Text";
 import CaretLeft from "phosphor-react-native/src/icons/CaretLeft";
 import { createStyles } from "../utils/createStyles";
-import Animated, {
-  SharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import Animated, { SharedValue, useAnimatedStyle } from "react-native-reanimated";
 type ChatHeadProps = {
   name: string;
   image: string;
@@ -52,6 +49,9 @@ const useStyles = createStyles((theme) =>
       left: 0,
       zIndex: 1,
       width: "100%",
+      borderBottomColor: theme.gray1,
+      borderBottomWidth: 1,
+      elevation: 1,
     },
     headerContainer: {
       alignItems: "center",

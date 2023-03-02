@@ -1,0 +1,68 @@
+import { useForm, zodResolver } from "@mantine/form";
+import { z } from "zod";
+import Column from "../../ui/Column";
+import Input from "../../ui/Input";
+import NextButton from "../../ui/NextButton";
+
+type Props = {
+  onSubmit: (values: LoginSchema) => void;
+  loading: boolean;
+};
+
+const LoginForm = (props: Props) => {
+  const form = useForm<LoginSchema>({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validate: zodResolver(LoginSchema),
+  });
+
+  function onSubmit(fn: (values: LoginSchema) => void) {
+    return () => {
+      const result = form.validate();
+      if (result.hasErrors) return;
+      fn(form.values);
+    };
+  }
+
+  const usernameProps = form.getInputProps("username");
+  const passwordProps = form.getInputProps("password");
+  return (
+    <>
+      <Column gap={16}>
+        <Input
+          onChangeText={usernameProps.onChange}
+          value={usernameProps.value}
+          error={usernameProps.error}
+          hint="Username"
+          placeholder="yousefelgoharyx"
+        />
+        <Input
+          onChangeText={passwordProps.onChange}
+          value={passwordProps.value}
+          error={passwordProps.error}
+          secureTextEntry
+          placeholder="********"
+          hint="Password"
+        />
+      </Column>
+
+      {/* Next Button */}
+      <NextButton
+        loading={props.loading}
+        onPress={onSubmit(props.onSubmit)}
+        style={{ marginTop: 32 }}
+      />
+    </>
+  );
+};
+
+const LoginSchema = z.object({
+  username: z.string().min(3, "3 characters long"),
+  password: z.string().min(3, "3 characters long"),
+});
+
+export type LoginSchema = z.infer<typeof LoginSchema>;
+
+export default LoginForm;

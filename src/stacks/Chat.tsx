@@ -49,6 +49,7 @@ const Chat = () => {
         height={height}
       />
       <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
         onContentSizeChange={(e, h) => {
           scrollViewRef.current?.scrollToEnd({ animated: false });

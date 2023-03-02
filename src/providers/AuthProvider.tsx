@@ -1,12 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { LoginSchema } from "../components/Login/LoginForm";
+import { SignupSchema } from "../components/Signup/SignupForm";
 import { httpAgent } from "../utils/axios";
 
-// create auth provider with react context
-export type UserForm = {
-  username: string;
-  password: string;
-};
 export type User = {
   username: string;
   accessToken: string;
@@ -14,7 +11,8 @@ export type User = {
 };
 type AuthContextType = {
   user: User | null;
-  login: (user: UserForm) => void;
+  login: (user: LoginSchema) => void;
+  signup: (user: SignupSchema) => void;
   logout: () => void;
   initAuth: () => void;
 };
@@ -26,9 +24,8 @@ export const AuthContext = createContext<AuthContextType>(null);
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = async (user: UserForm) => {
+  const login = async (user: LoginSchema) => {
     const response = await httpAgent.post<Omit<User, "username">>("/auth/login", user);
-    console.log(response.data);
 
     const newUser = {
       ...response.data,
@@ -36,6 +33,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     };
     await AsyncStorage.setItem("user", JSON.stringify(newUser));
     setUser(newUser);
+  };
+
+  const signup = async (user: SignupSchema) => {
+    await httpAgent.post("/auth/signup", user);
+    const loginCredentials = {
+      username: user.username,
+      password: user.password,
+    };
+    await login(loginCredentials);
   };
 
   const logout = async () => {
@@ -49,7 +55,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, initAuth }}>
+    <AuthContext.Provider value={{ user, login, logout, initAuth, signup }}>
       {children}
     </AuthContext.Provider>
   );

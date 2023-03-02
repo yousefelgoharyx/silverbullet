@@ -7,11 +7,11 @@ type Props = React.PropsWithChildren<{
 }> &
   React.ComponentProps<typeof TouchableOpacity>;
 const TextButton = (props: Props) => {
-  const { icon, children, ...rest } = props;
+  const { icon, children, style, ...rest } = props;
   return (
-    <TouchableOpacity style={styles.container} {...rest}>
+    <TouchableOpacity style={[styles.container, style]} {...rest}>
       {icon}
-      <Text weight="bold" size={18} style={{ textTransform: "uppercase" }}>
+      <Text weight="bold" size={18} style={{ textTransform: "uppercase", top: 1 }}>
         {children}
       </Text>
     </TouchableOpacity>
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 2,
   },
 });
 export default TextButton;
