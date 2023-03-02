@@ -15,7 +15,7 @@ export function createStyles<T extends NamedStyles<T>>(
   };
 }
 
-export function useTheme() {
+export function useTheme(): Theme {
   const { scheme } = useScheme();
   return scheme ? themes[scheme] : themes.light;
 }

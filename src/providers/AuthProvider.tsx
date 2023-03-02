@@ -18,6 +18,8 @@ type AuthContextType = {
   logout: () => void;
   initAuth: () => void;
 };
+
+// @ts-ignore
 export const AuthContext = createContext<AuthContextType>(null);
 
 // create auth provider with react context
@@ -25,9 +27,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (user: UserForm) => {
-    const { data } = await httpAgent.post<Omit<User, "username">>("/auth/login", user);
+    const response = await httpAgent.post<Omit<User, "username">>("/auth/login", user);
+    console.log(response.data);
+
     const newUser = {
-      ...data,
+      ...response.data,
       username: user.username,
     };
     await AsyncStorage.setItem("user", JSON.stringify(newUser));

@@ -1,15 +1,23 @@
-import React from 'react';
-import {TouchableOpacity, View, StyleSheet} from 'react-native';
-import {createStyles} from '../utils/createStyles';
-import ArrowArcLeft from 'phosphor-react-native/src/icons/ArrowRight';
+import React from "react";
+import { TouchableOpacity, View, StyleSheet, ActivityIndicator } from "react-native";
+import { createStyles, useTheme } from "../utils/createStyles";
+import ArrowArcLeft from "phosphor-react-native/src/icons/ArrowRight";
 type NextButtonProps = {
   onPress: () => void;
+  loading?: boolean;
 } & React.ComponentProps<typeof TouchableOpacity>;
 
-const NextButton = ({onPress, ...rest}: NextButtonProps) => {
+const NextButton = ({ onPress, loading, disabled, ...rest }: NextButtonProps) => {
+  const theme = useTheme();
   const styles = useStyles();
+  if (loading)
+    return (
+      <View {...rest}>
+        <ActivityIndicator size={48} color={theme.text} />
+      </View>
+    );
   return (
-    <TouchableOpacity onPress={onPress} {...rest}>
+    <TouchableOpacity onPress={onPress} {...rest} disabled={disabled}>
       <View style={styles.container}>
         <View style={styles.circle} />
         <View style={styles.arrowWrapper}>
@@ -20,16 +28,16 @@ const NextButton = ({onPress, ...rest}: NextButtonProps) => {
   );
 };
 
-const useStyles = createStyles(theme =>
+const useStyles = createStyles((theme) =>
   StyleSheet.create({
     container: {
-      position: 'relative',
+      position: "relative",
     },
     circle: {
       width: 48,
       height: 48,
       borderRadius: 48,
-      borderStyle: 'solid',
+      borderStyle: "solid",
       borderRightColor: theme.text,
       borderRightWidth: 2,
 
@@ -41,14 +49,14 @@ const useStyles = createStyles(theme =>
 
       borderBottomColor: theme.text,
       borderBottomWidth: 2,
-      transform: [{rotate: '-90deg'}],
+      transform: [{ rotate: "-90deg" }],
     },
     arrowWrapper: {
-      position: 'absolute',
+      position: "absolute",
       top: 10,
       left: 8,
     },
-  }),
+  })
 );
 
 export default NextButton;

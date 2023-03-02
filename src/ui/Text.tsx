@@ -5,6 +5,7 @@ import { useTheme } from "../utils/createStyles";
 type Props = {
   weight?: "bold" | "regular" | "medium" | "light";
   size?: number;
+  color?: string;
 } & React.ComponentProps<typeof T>;
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -16,7 +17,7 @@ const Text = (props: Props) => {
   return (
     <T
       {...rest}
-      style={[{ fontFamily, fontSize: size, color: theme.text }, style]}
+      style={[{ fontFamily, fontSize: size, color: props.color || theme.text }, style]}
     >
       {children}
     </T>

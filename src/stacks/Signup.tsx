@@ -1,57 +1,56 @@
-import React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import Container from '../ui/Container';
-import Input from '../ui/Input';
-import NextButton from '../ui/NextButton';
-import Text from '../ui/Text';
-import SignIn from 'phosphor-react-native/src/icons/SignIn';
-import {useNavigation} from '@react-navigation/native';
+import React from "react";
+import { StyleSheet } from "react-native";
+import Container from "../ui/Container";
+import Input from "../ui/Input";
+import NextButton from "../ui/NextButton";
+import Text from "../ui/Text";
+import SignIn from "phosphor-react-native/src/icons/SignIn";
+import { useNavigation } from "@react-navigation/native";
+import Column from "../ui/Column";
+import TextButton from "../ui/TextButton";
 const Signup = () => {
   const navigation = useNavigation();
-  const handleSignup = () => navigation.navigate('Home' as never);
-  const handleLogin = () => navigation.navigate('Login' as never);
+  const handleSignup = () => navigation.navigate("Home" as never);
+  const handleLogin = () => navigation.navigate("Login" as never);
   return (
     <Container style={styles.container}>
+      {/* Heading */}
       <Text weight="bold" style={styles.heading}>
         Signup
       </Text>
-      <Input hint="Name" placeholder="Yousef" style={{marginBottom: 16}} />
-      <Input
-        hint="Username"
-        placeholder="yousefelgoharyx"
-        style={{marginBottom: 16}}
-      />
-      <Input secureTextEntry placeholder="********" hint="Password" />
-      <NextButton onPress={handleSignup} style={{marginTop: 64}} />
-      <TouchableOpacity style={styles.signup} onPress={handleLogin}>
-        <SignIn size={24} />
-        <Text
-          weight="bold"
-          size={18}
-          style={{marginStart: 8, textTransform: 'uppercase'}}>
-          Login
-        </Text>
-      </TouchableOpacity>
+
+      {/* Inputs */}
+      <Column gap={16}>
+        <Input hint="Name" placeholder="Yousef" />
+        <Input hint="Username" placeholder="yousefelgoharyx" />
+        <Input secureTextEntry placeholder="********" hint="Password" />
+      </Column>
+
+      {/* Next Button */}
+      <NextButton onPress={handleSignup} style={{ marginTop: 64 }} />
+
+      {/* Login */}
+      <TextButton style={styles.signup} onPress={handleLogin} icon={<SignIn size={24} />}>
+        Login
+      </TextButton>
     </Container>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
   heading: {
     fontSize: 28,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     marginBottom: 16,
   },
   signup: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 32,
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });
 export default Signup;
